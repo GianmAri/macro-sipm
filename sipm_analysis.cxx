@@ -47,11 +47,11 @@ void sipm_analysis(TString fname) {
         baseline = sum/300.0;
 
         // 92 è la differenza tra 514 e 422
-        rettangolone = ((baseline * (deltat * 92) / resistance)) * TMath::Pow(10,-6); // mA * t = mC
+        rettangolone = ((baseline * (deltat * 92) / resistance)) * TMath::Power(10,-6); // mA * t = mC
 
         Double_t integrale = 0.0;
-        for (Double_t = 422 * deltat; t < 514 * deltat; t=t+deltat  ) {
-            integrale = a[i] * deltat/resistance * TMath::Pow(10,-6) + integrale; // mC
+        for (int t = 422 ; t < 514 ; t++  ) {
+            integrale = a[t] * deltat/resistance * TMath::Power(10,-6) + integrale; // mC
         }
         Charge = rettangolone - integrale; // mC
 
