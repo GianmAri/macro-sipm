@@ -26,7 +26,7 @@ void sipm_analysis(TString fname) {
     std::vector <double> aa(start, end);
     std::vector <double> bb;
     for(int i=0; i<aa.size(); i++) {
-        bb.push_back(aa[i]-1.0);
+        bb.push_back(aa[i] * constant_of_conversion - 1.0);
     }
     sipm_tree -> Branch("bb", &bb);
 
