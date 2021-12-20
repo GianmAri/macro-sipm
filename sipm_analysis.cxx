@@ -32,38 +32,12 @@ void sipm_analysis(TString fname) {
     while(file.good()) {
         for (int i = 0; i<1024; i++) {
             file >> temp;
-            a[i] = temp * constant_of_conversion; // mv
+            a[i] = temp * constant_of_conversion - 1.0; // mv
             time[i] = 0.004 * i; // us
         }
         sipm_tree -> Fill();
     }
 
-    /*
-
-    std::vector <double> aa(start, end);
-    std::vector <double> bb;
-    for(int i=0; i<aa.size(); i++) {
-        bb.push_back(aa[i] * constant_of_conversion - 1.0);
-    }
-    sipm_tree -> Branch("bb", &bb);
-
-    */
-
-    //TBranch *Acquisizioni = sipm_tree->Branch("aa", &aa);  //TBranch *Acquisizioni = sipm_tree->Branch("b",b,"b[num]/D");
-
-
-
-
-    //for (int i=0; i<events; i++) {
-        //for(int j=0; j<num; j++) {
-        //    file >> a[j];  //[i]; // Scala da convertire
-        //    b[j] = a[j] * constant_of_conversion; // mV
-            
-        //}
-
-    
-    //sipm_tree -> ResetBranchAddresses(); //INVESTIGARE
-    //}
 
     file.close();
 
@@ -73,17 +47,3 @@ void sipm_analysis(TString fname) {
     
     return;    
 }
-
-
-///////////////////////////////////////////////////////
-
-
-
-// Utilizzato per contare
-/*
-    std::string unused;
-    while (std::getline(in, unused)) {
-        ++num;
-    }
-    std::cout << num/1024 << endl;
-*/
