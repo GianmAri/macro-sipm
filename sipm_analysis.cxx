@@ -9,9 +9,6 @@ void sipm_analysis(TString fname) {
     ifstream is(fname);
     std::istream_iterator<double> start(is), end;
     
-    
-    //
-    std::vector <double> aa(start, end);
 
     file.open(fname);
 
@@ -26,7 +23,14 @@ void sipm_analysis(TString fname) {
     
 
     TTree *sipm_tree = new TTree("sipm_tree","sipm_tree");
-    TBranch *Acquisizioni = sipm_tree->Branch("aa", &aa);  //TBranch *Acquisizioni = sipm_tree->Branch("b",b,"b[num]/D");
+    std::vector <double> aa(start, end);
+    std::vector <double> bb;
+    for(int i=0; i<aa.size(); i++) {
+        bb.push_back(aa[i]-1.0);
+    }
+    sipm_tree -> Branch("bb", &bb);
+
+    //TBranch *Acquisizioni = sipm_tree->Branch("aa", &aa);  //TBranch *Acquisizioni = sipm_tree->Branch("b",b,"b[num]/D");
     sipm_tree -> Fill();
 
 
@@ -49,6 +53,7 @@ void sipm_analysis(TString fname) {
 
     fout->cd();
     sipm_tree -> Write();
+    fout -> Close();
     
     return;    
 }
