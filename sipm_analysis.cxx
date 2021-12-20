@@ -4,27 +4,19 @@ void sipm_analysis(TString fname) {
     ifstream file;
     TFile *fout = new TFile("output.root", "recreate");
 
+    // Contatore numero di eventi
     Int_t num;
-    //ifstream in(fname);
-    ifstream is (fname);
+    ifstream is(fname);
     std::istream_iterator<double> start(is), end;
-    std::vector <double> aa(start, end);
-    //for(int i=0; i<aa.size(); i++) {
-    //    std::cout << aa[i] << endl;
-    //}
     
-
-
-    //std::string unused;
-    //while (std::getline(in, unused)) {
-    //    ++num;
-    //}
-    //std::cout << num/1024 << endl;
-
+    
+    //
+    std::vector <double> aa(start, end);
 
     file.open(fname);
 
-    double constant_of_conversion = 2.0/4096.0;
+    
+    double constant_of_conversion = 2.0/4096.0; 
 
 
     Double_t a[num];   // events
@@ -55,13 +47,22 @@ void sipm_analysis(TString fname) {
 
     file.close();
 
-    
-    //TCanvas *c =  new TCanvas ("c");
-    //TGraph *gra = new TGraph(1024,time,b);
-    //c -> cd();
-    //gra -> Draw;
     fout->cd();
     sipm_tree -> Write();
     
     return;    
 }
+
+
+///////////////////////////////////////////////////////
+
+
+
+// Utilizzato per contare
+/*
+    std::string unused;
+    while (std::getline(in, unused)) {
+        ++num;
+    }
+    std::cout << num/1024 << endl;
+*/
