@@ -16,7 +16,7 @@ void sipm_analysis(TString fname) {
     file.open(fname);
 
     
-    double constant_of_conversion = 2.0/4096.0 - 1.0; 
+    double constant_of_conversion = 2.0/4096.0; 
 
 
     Double_t a[num];   // events
