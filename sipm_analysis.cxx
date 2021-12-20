@@ -1,6 +1,8 @@
 #include <vector>
 
 //Resistenza in ingresso: 50 Ohm
+// T1 = 1.668 us -> 422
+// T2 = 2.056 us -> 514
 
 
 void sipm_analysis(TString fname) {
@@ -11,24 +13,49 @@ void sipm_analysis(TString fname) {
     file.open(fname);
 
     
-    double constant_of_conversion = 2.0/4096.0; 
+    double constant_of_conversion = 2.0/4096.0;
+    double deltat = 0.004; // us
+    double resistance = 50; // Ohm
 
 
     Double_t a[1024];   // events
-    Int_t temp;
-    double time[1024];
+    Int_t temp = 0;
+    Double_t time[1024];
+    Double_t integral[1024];
+    Double_t sum = 0.0;
+    Double_t baseline = 0.0;
+    Double_t rettangolone = 0.0; // integrale superficie picco
+    Double_t Charge = 0.0;
+
 
     
 
     TTree *sipm_tree = new TTree("sipm_tree","sipm_tree");
     sipm_tree -> Branch("Data", a,"Data[1024]/D");
     sipm_tree -> Branch("Time", time, "Time[1024]/D");
+    sipm_tree -> Branch("Charge", Charge, "Charge/D");
     while(file.good()) {
         for (int i = 0; i<1024; i++) {
             file >> temp;
             a[i] = temp * constant_of_conversion - 1.0; // mv
-            time[i] = 0.004 * i; // us
+            time[i] = deltat * i; // us
+ 
         }
+        for (int i = 0; i<300; i++) {
+            sum = sum + a[i];
+        }
+        baseline = sum/300.0;
+
+        // 92 è la differenza tra 514 e 422
+        rettangolone = ((baseline * (deltat * 92) / resistance)) * TMath::Pow(10,-6); // mA * t = mC
+
+        Double_t integrale = 0.0;
+        for (Double_t = 422 * deltat; t < 514 * deltat; t=t+deltat  ) {
+            integrale = a[i] * deltat/resistance * TMath::Pow(10,-6) + integrale; // mC
+        }
+        Charge = rettangolone - integrale; // mC
+
+
         sipm_tree -> Fill();
     }
 
