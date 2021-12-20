@@ -29,19 +29,30 @@ void sipm_analysis(TString fname) {
     Double_t Charge = 0.0;
 
 
+
     
 
     TTree *sipm_tree = new TTree("sipm_tree","sipm_tree");
     sipm_tree -> Branch("Data", a,"Data[1024]/D");
     sipm_tree -> Branch("Time", time, "Time[1024]/D");
     sipm_tree -> Branch("Charge", &Charge, "Charge/D");
+
+
+
     while(file.good()) {
+        Charge = 0;
         for (int i = 0; i<1024; i++) {
             file >> temp;
             a[i] = temp * constant_of_conversion - 1.0; // mv
             time[i] = deltat * i; // us
  
         }
+
+        TGraph *g = new TGraph(1024, time, a);
+
+             
+
+
         for (int i = 0; i<300; i++) {
             sum = sum + a[i];
         }
@@ -56,9 +67,14 @@ void sipm_analysis(TString fname) {
         }
         Charge = rettangolone - integrale; // mC
 
+        
+
+        
 
         sipm_tree -> Fill();
     }
+
+
 
 
     file.close();
