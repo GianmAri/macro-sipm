@@ -1,4 +1,5 @@
 #include <vector>
+//#include "TMath.h"
 
 //Resistenza in ingresso: 50 Ohm
 // T1 = 1.668 us -> 422
@@ -33,7 +34,7 @@ void sipm_analysis(TString fname) {
     TTree *sipm_tree = new TTree("sipm_tree","sipm_tree");
     sipm_tree -> Branch("Data", a,"Data[1024]/D");
     sipm_tree -> Branch("Time", time, "Time[1024]/D");
-    sipm_tree -> Branch("Charge", Charge, "Charge/D");
+    sipm_tree -> Branch("Charge", &Charge, "Charge/D");
     while(file.good()) {
         for (int i = 0; i<1024; i++) {
             file >> temp;
@@ -47,11 +48,11 @@ void sipm_analysis(TString fname) {
         baseline = sum/300.0;
 
         // 92 è la differenza tra 514 e 422
-        rettangolone = ((baseline * (deltat * 92) / resistance)) * TMath::Power(10,-6); // mA * t = mC
+        rettangolone = ((baseline * (deltat * 92) / resistance)) * 0.000001; // mA * t = mC       TMath::Power(10,-6
 
         Double_t integrale = 0.0;
         for (int t = 422 ; t < 514 ; t++  ) {
-            integrale = a[t] * deltat/resistance * TMath::Power(10,-6) + integrale; // mC
+            integrale = a[t] * deltat/resistance * 0.000001 + integrale; // mC       TMath::Power(10,-6)
         }
         Charge = rettangolone - integrale; // mC
 
