@@ -6,11 +6,6 @@
 void sipm_analysis(TString fname) {
     ifstream file;
     TFile *fout = new TFile("output.root", "recreate");
-
-    // Contatore numero di eventi
-    Int_t num;
-    ifstream is(fname);
-    std::istream_iterator<double> start(is), end;
     
 
     file.open(fname);
@@ -20,7 +15,6 @@ void sipm_analysis(TString fname) {
 
 
     Double_t a[1024];   // events
-    Double_t b[1024];   // 
     Int_t temp;
     double time[1024];
 
