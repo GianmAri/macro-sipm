@@ -41,35 +41,29 @@ void sipm_analysis(TString fname) {
 
     while(file.good()) {
         Charge = 0;
+
         for (int i = 0; i<1024; i++) {
             file >> temp;
             a[i] = temp * constant_of_conversion - 1.0; // mv
             time[i] = deltat * i; // us
- 
         }
 
-        TGraph *g = new TGraph(1024, time, a);
-
-             
-
-
+        sum = 0.0;
         for (int i = 0; i<300; i++) {
             sum = sum + a[i];
         }
         baseline = sum/300.0;
 
         // 92 è la differenza tra 514 e 422
+        rettangolone = 0.0;
         rettangolone = ((baseline * (deltat * 92) / resistance)) * 0.000001; // mA * t = mC       TMath::Power(10,-6
 
         Double_t integrale = 0.0;
-        for (int t = 422 ; t < 514 ; t++  ) {
-            integrale = a[t] * deltat/resistance * 0.000001 + integrale; // mC       TMath::Power(10,-6)
+        for (int i = 422 ; i < 514 ; i++  ) {
+            integrale = a[i] * deltat/resistance * 0.000001 + integrale; // mC       TMath::Power(10,-6)
         }
-        Charge = rettangolone - integrale; // mC
 
-        
-
-        
+        Charge = rettangolone - integrale; // mC   
 
         sipm_tree -> Fill();
     }
