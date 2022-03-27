@@ -1,4 +1,4 @@
-void dark_cout() {
+void dark_count(TString fname) {
     ifstream file;
     TFile *fout = new TFile("darkcount.root", "recreate");
 
