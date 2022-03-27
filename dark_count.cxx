@@ -36,7 +36,7 @@ void dark_cout() {
         
         for (int i = 0; i < 16 * 1024; i++) {
             if (a[i] < threshold && (i+1) != (16 * 1024 + 1)) {
-                if(a[i+1] > a[i]) {
+                if(a[i+1] >= threshold) {
                     count++;
                 }
             }
