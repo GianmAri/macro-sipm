@@ -21,6 +21,9 @@ void dark_cout() {
 
     Double_t threshold = minimum -  (3.0 * sigma);
     
+    TTree *dark_count_tree = new TTree("dark_count_tree", "dark_count_tree");
+    dark_count_tree -> Branch("Dark Count", dark_count,"Dark Count[100000]/I");
+    
     Int_t j = 0;
 
     while (file.good()) {
@@ -42,9 +45,15 @@ void dark_cout() {
         j++;
            
         
-        
+        dark_count_tree -> Fill();
     }
 
 
-
+    file.close();
+    fout->cd();
+    dark_count_tree -> Write();
+    fout -> Close();
+    
+    return;
+    
 }
