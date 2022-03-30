@@ -61,6 +61,8 @@ void sipm_analysis(TString fname) {
 
 
     Double_t a[1024];   // events
+    
+    Double_t Minimum = 0;    
     Int_t temp = 0;
     Double_t time[1024];
     Double_t integral[1024];
@@ -77,14 +79,16 @@ void sipm_analysis(TString fname) {
     sipm_tree -> Branch("Data", a,"Data[1024]/D");
     sipm_tree -> Branch("Time", time, "Time[1024]/D");
     sipm_tree -> Branch("Charge", &Charge, "Charge/D");
+    sipm_tree -> Branch("Minimum", &Minimum, "Minimum/D");
 
     
     while(file.good()) {
+        Minimum = 0;
         Charge = 0;
         
         for (int i = 0; i<1024; i++) {
             file >> temp;
-            a[i] = temp * constant_of_conversion - 1.0; // mv
+            a[i] = temp * constant_of_conversion - 1.0; // V
             time[i] = deltat * i; // us
         }
       
@@ -93,11 +97,16 @@ void sipm_analysis(TString fname) {
 
         // 92 è la differenza tra 514 e 422
         rettangolone = 0.0;
-        rettangolone = ((MB * (deltat * 92) / resistance)) * 0.000001; // mA * t = mC       TMath::Power(10,-6
+        rettangolone = ((MB * (deltat * 92) / resistance)) * 0.000001; // A * t = C       TMath::Power(10,-6
 
         Double_t integrale = 0.0;
+        Minimum = a[422];
+     
         for (int i = 422 ; i < 514 ; i++  ) {
-            integrale = a[i] * deltat/resistance * 0.000001 + integrale; // mC       TMath::Power(10,-6)
+            integrale = a[i] * deltat/resistance * 0.000001 + integrale; // C       TMath::Power(10,-6)
+            if(a[i] < Minimum) {
+                Minimum = a[i];
+            }
         }
 
         Charge = rettangolone - integrale; // mC   
