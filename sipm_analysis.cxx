@@ -1,4 +1,3 @@
-#include <vector>
 //#include "TMath.h"
 
 //Resistenza in ingresso: 50 Ohm
@@ -10,6 +9,8 @@ void sipm_analysis(TString fname) {
     ifstream file;
     TFile *fout = new TFile("output.root", "recreate");
     
+    //TCanvas *c1 = new TCanvas("c1","c1");
+    //TH1D *h1 = new TH1D ("h1", "h1", 25, -1, 1);
 
     file.open(fname);
 
@@ -20,13 +21,17 @@ void sipm_analysis(TString fname) {
 
 
     Double_t a[1024];   // events
+
+    Double_t Minimum = 0;
     Int_t temp = 0;
     Double_t time[1024];
     Double_t integral[1024];
     Double_t sum = 0.0;
     Double_t baseline = 0.0;
     Double_t rettangolone = 0.0; // integrale superficie picco
+    Double_t integrale = 0.0;
     Double_t Charge = 0.0;
+
 
 
 
@@ -36,34 +41,44 @@ void sipm_analysis(TString fname) {
     sipm_tree -> Branch("Data", a,"Data[1024]/D");
     sipm_tree -> Branch("Time", time, "Time[1024]/D");
     sipm_tree -> Branch("Charge", &Charge, "Charge/D");
+    sipm_tree -> Branch("Minimum", &Minimum, "Minimum/D");
 
 
 
     while(file.good()) {
+        Minimum = 0;
         Charge = 0;
 
         for (int i = 0; i<1024; i++) {
             file >> temp;
-            a[i] = temp * constant_of_conversion - 1.0; // mv
+            a[i] = temp * constant_of_conversion - 1.0; // V
             time[i] = deltat * i; // us
-        }
+        }  
 
         sum = 0.0;
-        for (int i = 0; i<300; i++) {
+        
+        for (int i = 0; i<150; i++) {
             sum = sum + a[i];
+        
         }
-        baseline = sum/300.0;
+        baseline = sum/150.0;
 
         // 92 è la differenza tra 514 e 422
         rettangolone = 0.0;
-        rettangolone = ((baseline * (deltat * 92) / resistance)) * 0.000001; // mA * t = mC       TMath::Power(10,-6
+        rettangolone = ((baseline * (deltat * 92) / resistance)) * 0.000001; // A * t = C       TMath::Power(10,-6
 
-        Double_t integrale = 0.0;
+        integrale = 0.0;
+        Minimum = a[422];
         for (int i = 422 ; i < 514 ; i++  ) {
-            integrale = a[i] * deltat/resistance * 0.000001 + integrale; // mC       TMath::Power(10,-6)
+            integrale = a[i] * deltat/resistance * 0.000001 + integrale; // C       TMath::Power(10,-6)
+            if(a[i] < Minimum) {
+                Minimum = a[i];
+            }
         }
 
-        Charge = rettangolone - integrale; // mC   
+        Charge = rettangolone - integrale; // C   
+
+        std::cout << Minimum << std::endl;
 
         sipm_tree -> Fill();
     }
@@ -72,6 +87,9 @@ void sipm_analysis(TString fname) {
 
 
     file.close();
+
+    //c1 -> cd();
+    //h1 -> Draw();
 
     fout->cd();
     sipm_tree -> Write();
