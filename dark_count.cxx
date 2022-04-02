@@ -14,33 +14,30 @@ void dark_count(TString fname) {
     
     Int_t temp = 0;
     Int_t a[16 * 1024];
-    Int_t dark_count[100000];
+    Int_t dark_count=0;
     //Double_t time[16*1024];
     Int_t count = 0;
-    Double_t mean = 1.64408e-11; //valore primo picco
-    Double_t sigma = 1.52515e-12; //valore primo picco
-    Double_t constant_of_conversion = 4096.0/2.0;
-    Double_t minimum = (mean + 1.0) * constant_of_conversion;
+    Double_t mean = 2071; //valore primo picco
+    Double_t sigma = 8; //valore primo picco
+    //Double_t Minimum = (mean + 1.0) * constant_of_conversion;
 
-    Double_t threshold = minimum -  (3.0 * sigma);
+    Double_t threshold = mean + (3.0 * sigma);
     
     TTree *dark_count_tree = new TTree("dark_count_tree", "dark_count_tree");
-    dark_count_tree -> Branch("DarkCount", dark_count,"DarkCount[100000]/I");
+    dark_count_tree -> Branch("DarkCount", &dark_count,"DarkCount/I");
+    //dark_count_tree -> Branch("Signal", a,"Signal[16384]/I");
     
     Int_t j = 0;
 
     while (file.good()) {
-        //std::cout << "PROVA1" << std::endl;
         count = 0;
         for(int i = 0; i < 16 * 1024; i++) {
             file >> temp;
             a[i] = temp;
-            //std::cout << "PROVA2" << "      " << i << std::endl;
-            //time[i] = deltat * i;     
+            //std::cout << a[i] << std::endl;
         }
         
         for (int i = 0; i < 16 * 1024; i++) {
-            //std::cout << "PROVA3" << "      " << i << std::endl;
             if (a[i] < threshold && (i+1) < 16 * 1024) {
                 if(a[i+1] >= threshold) {
                     count++;
@@ -48,19 +45,15 @@ void dark_count(TString fname) {
             }
         }
 
-        //std::cout << "PROVA4" << std::endl;
-        dark_count[j] = count;
+        dark_count = count;
+        //std::cout << dark_count << std::endl;
         j++;
-        //h1 -> Fill(count);
-        //std::cout << "PROVA5" << std::endl;
+
 
         std::cout << double(j) / 1000.0 << "% \r"; 
-
-        //std::cout << "PROVA6" << std::endl;
            
         
         dark_count_tree -> Fill();
-        //std::cout << "PROVA7" << std::endl;
     }
 
 

@@ -21,8 +21,9 @@ void sipm_analysis(TString fname) {
 
 
     Double_t a[1024];   // events
+    Int_t b[1024]; // unconverted events
 
-    Double_t Minimum = 0;
+    Int_t Minimum = 0;
     Int_t temp = 0;
     Double_t time[1024];
     Double_t integral[1024];
@@ -39,9 +40,10 @@ void sipm_analysis(TString fname) {
 
     TTree *sipm_tree = new TTree("sipm_tree","sipm_tree");
     sipm_tree -> Branch("Data", a,"Data[1024]/D");
+    sipm_tree -> Branch("UnconvertedData", b, "UnconvertedData[1024]/I");
     sipm_tree -> Branch("Time", time, "Time[1024]/D");
     sipm_tree -> Branch("Charge", &Charge, "Charge/D");
-    sipm_tree -> Branch("Minimum", &Minimum, "Minimum/D");
+    sipm_tree -> Branch("Minimum", &Minimum, "Minimum/I");
 
 
 
@@ -51,6 +53,7 @@ void sipm_analysis(TString fname) {
 
         for (int i = 0; i<1024; i++) {
             file >> temp;
+            b[i] = temp;
             a[i] = temp * constant_of_conversion - 1.0; // V
             time[i] = deltat * i; // us
         }  
@@ -68,11 +71,11 @@ void sipm_analysis(TString fname) {
         rettangolone = ((baseline * (deltat * 92) / resistance)) * 0.000001; // A * t = C       TMath::Power(10,-6
 
         integrale = 0.0;
-        Minimum = a[422];
+        Minimum = b[422];
         for (int i = 422 ; i < 514 ; i++  ) {
             integrale = a[i] * deltat/resistance * 0.000001 + integrale; // C       TMath::Power(10,-6)
-            if(a[i] < Minimum) {
-                Minimum = a[i];
+            if(b[i] < Minimum) {
+                Minimum = b[i];
             }
         }
 
